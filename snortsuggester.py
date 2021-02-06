@@ -59,10 +59,11 @@ def findSSHbruteforce(pcapASlist):
 					
 					#emptydictionary[src_ip][dst_ip].append(timestamp)
 					#logic to compare current timestamp to [timestamp is last position ]
+			#current logic checks for 10 syn packets in a 25 second time frame
 					if (float(timestamp) - float(emptydictionary[src_ip][dst_ip][-1])) < 25:
 						emptydictionary[src_ip][dst_ip].append(timestamp)
 					#if time between is greater than 60 seconds, overwrite the list of timestamps with new timestamp 
-						if len(emptydictionary[src_ip][dst_ip]) > 1:
+						if len(emptydictionary[src_ip][dst_ip]) > 10:
 							print(f"[+] Potential SSH Brute Force Dectected. Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} 22 (msg:'Potential SSH Brute Force')")
 							break
 					else:
