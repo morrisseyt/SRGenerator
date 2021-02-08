@@ -17,14 +17,15 @@ def pcapconverter(pcap):
 
 
 def main():
+	if len(sys.argv)
 	pcapconverter(pcap)
 	#findSSHtraffic(pcapASlist)
-	findSSHbruteforce(pcapASlist)
+	findbruteforce(pcapASlist)
 	print_summary()
 	
 
 def store_rule(str):
-#	print(str)
+
 	if str in stored_rules:
 		return
 	else:
@@ -36,7 +37,7 @@ def print_summary():
 	for i in stored_rules:
 		print(i)
 
-
+#function currently not in proudction---------
 def findSSHtraffic(pcapASlist):
 	SSHcounter = 0
 
@@ -62,11 +63,11 @@ def findSSHtraffic(pcapASlist):
 
 				print(f"Incoming SSH Handshake from {src_ip}. Suggested SNORT Rule: alert TCP {src_ip} any -> any 22 (msg:'Incoming SSH Handshake')")
 				return
+#------------------------------------------------
 
-
-def findSSHbruteforce(pcapASlist):
-	ip_tracker = {}
-
+def findbruteforce(pcapASlist):
+	ssh_tracker = {}
+	ftp_tracker = {}
 	#loop through list
 
 	for line in pcapASlist:
@@ -83,35 +84,54 @@ def findSSHbruteforce(pcapASlist):
 		if len(split_lines) <= 9:
 			continue
 		elif split_lines[9] == '22' and split_lines[10] == '[SYN]':
-			if src_ip in ip_tracker:
-				if dst_ip in ip_tracker[src_ip]:
+			if src_ip in ssh_tracker:
+				if dst_ip in ssh_tracker[src_ip]:
 
 					#logic to compare current timestamp to [timestamp is last position ]
 					#current logic checks for 10 syn packets in a 25 second time frame
 
-					interval = float(timestamp) - float(ip_tracker[src_ip][dst_ip][-1])
+					interval = float(timestamp) - float(ssh_tracker[src_ip][dst_ip][-1])
 					if interval < 25:
-						ip_tracker[src_ip][dst_ip].append(timestamp)
+						ssh_tracker[src_ip][dst_ip].append(timestamp)
+						#elif time between is less than 25 seconds, add timestamp to list of timestamps
 
-					#if time between is greater than 60 seconds, overwrite the list of timestamps with new timestamp 
 
-						if len(ip_tracker[src_ip][dst_ip]) > 10:
-							#print(f"[+] Potential SSH Brute Force Dectected. Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} 22 (msg:'Potential SSH Brute Force')")
+						if len(ssh_tracker[src_ip][dst_ip]) > 10:
 							rule = f"[+] Potential SSH Brute Force Dectected. Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} 22 (msg:'Potential SSH Brute Force')"
 							store_rule(rule)
 					else:
-						ip_tracker[src_ip][dst_ip] = [timestamp]
-					
-				#elif time between is less than 25 seconds, add timestamp to list of timestamps
+						ssh_tracker[src_ip][dst_ip] = [timestamp]
+						#above line overwrites timestamps for src_ip and dst_ip combo if the interval is more than 25 seconds
+
 
 				else:
-					ip_tracker[src_ip][dst_ip] = [timestamp]
+					ssh_tracker[src_ip][dst_ip] = [timestamp]
+			else:
+				ssh_tracker[src_ip] = {dst_ip : [timestamp]}
+
+		#logic is idential to ssh on port 22
+		elif split_lines[9] == '21' and split_lines[10] == '[SYN]':
+			if src_ip in ftp_tracker:
+				if dst_ip in ftp_tracker[src_ip]:
+
+					ftp_interval = float(timestamp) - float(ftp_tracker[src_ip][dst_ip][-1])
+					if ftp_interval < 25:
+						ftp_tracker[src_ip][dst_ip].append(timestamp)
+
+						if len(ftp_tracker[src_ip][dst_ip]) > 10:
+							rule = f"[+] Potential FTP Brute Force Dectected: Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} 21 (msg:'Potential FTP Brute Force')"
+
+							store_rule(rule)
+
+					else:
+						ftp_tracker[src_ip][dst_ip] = [timestamp]
+
+				else:
+					ftp_tracker[src_ip][dst_ip] = [timestamp]
+
 
 			else:
-				ip_tracker[src_ip] = {dst_ip : [timestamp]}
-
-		#elif split_lines[9] == '21' and split_lines[10] == '[SYN]'
-
+				ftp_tracker[src_ip] = {dst_ip : [timestamp]}
 
 
 
