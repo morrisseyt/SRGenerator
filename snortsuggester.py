@@ -17,7 +17,6 @@ def pcapconverter(pcap):
 
 
 def main():
-	if len(sys.argv)
 	pcapconverter(pcap)
 	#findSSHtraffic(pcapASlist)
 	findbruteforce(pcapASlist)
