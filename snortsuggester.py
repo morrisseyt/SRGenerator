@@ -5,6 +5,7 @@ import subprocess
 
 pcap = sys.argv[1]
 
+stored_rules = []
 pcapASlist = []
 
 def pcapconverter(pcap):
@@ -17,67 +18,109 @@ def pcapconverter(pcap):
 
 def main():
 	pcapconverter(pcap)
-	#print(pcapASlist)
 	#findSSHtraffic(pcapASlist)
 	findSSHbruteforce(pcapASlist)
+	print_summary()
+	
+
+def store_rule(str):
+#	print(str)
+	if str in stored_rules:
+		return
+	else:
+		stored_rules.append(str)
+		return
+
+
+def print_summary():
+	for i in stored_rules:
+		print(i)
+
 
 def findSSHtraffic(pcapASlist):
 	SSHcounter = 0
+
 	#loop through list
+
 	for line in pcapASlist:
+
 	#split lines on space to ge the fields 
+
 		split_lines = line.split()
 		src_ip = split_lines[2]
+
 	#logic destination port 22
+
 		if split_lines[9] == '22' and split_lines[10] == '[SYN]':
 			SSHcounter += 1
+
 	#if true trigger rule suggestion
+
 			if SSHcounter >= 5:
+
 				#print ssh rule suggestion
+
 				print(f"Incoming SSH Handshake from {src_ip}. Suggested SNORT Rule: alert TCP {src_ip} any -> any 22 (msg:'Incoming SSH Handshake')")
 				return
 
 
 def findSSHbruteforce(pcapASlist):
-	emptydictionary = {}
+	ip_tracker = {}
+
 	#loop through list
+
 	for line in pcapASlist:
+
 	#split lines on space to ge the fields 
+
 		split_lines = line.split()
 		src_ip = split_lines[2]
 		dst_ip = split_lines[4]
 		timestamp = split_lines[1]
+
 		#logic destination port 22
-		#print(line)
-		#print(len(split_lines))
+
 		if len(split_lines) <= 9:
 			continue
 		elif split_lines[9] == '22' and split_lines[10] == '[SYN]':
-			#print(split_lines)
-			if src_ip in emptydictionary:
-				if dst_ip in emptydictionary[src_ip]:
-					
-					#emptydictionary[src_ip][dst_ip].append(timestamp)
+			if src_ip in ip_tracker:
+				if dst_ip in ip_tracker[src_ip]:
+
 					#logic to compare current timestamp to [timestamp is last position ]
-			#current logic checks for 10 syn packets in a 25 second time frame
-					if (float(timestamp) - float(emptydictionary[src_ip][dst_ip][-1])) < 25:
-						emptydictionary[src_ip][dst_ip].append(timestamp)
+					#current logic checks for 10 syn packets in a 25 second time frame
+
+					interval = float(timestamp) - float(ip_tracker[src_ip][dst_ip][-1])
+					if interval < 25:
+						ip_tracker[src_ip][dst_ip].append(timestamp)
+
 					#if time between is greater than 60 seconds, overwrite the list of timestamps with new timestamp 
-						if len(emptydictionary[src_ip][dst_ip]) > 10:
-							print(f"[+] Potential SSH Brute Force Dectected. Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} 22 (msg:'Potential SSH Brute Force')")
-							break
+
+						if len(ip_tracker[src_ip][dst_ip]) > 10:
+							#print(f"[+] Potential SSH Brute Force Dectected. Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} 22 (msg:'Potential SSH Brute Force')")
+							rule = f"[+] Potential SSH Brute Force Dectected. Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} 22 (msg:'Potential SSH Brute Force')"
+							store_rule(rule)
 					else:
-						emptydictionary[src_ip][dst_ip] = [timestamp]
-					#elif time between is less than 60 seconds, add timestamp to list of timestamps
+						ip_tracker[src_ip][dst_ip] = [timestamp]
+					
+				#elif time between is less than 25 seconds, add timestamp to list of timestamps
+
 				else:
-					emptydictionary[src_ip][dst_ip] = [timestamp]
-				#emptydictionary[src_ip].append(timestamp)
-					#print(emptydictionary)
-			#	else:
-#					emptydictionary[src_ip][dst_ip].append(timestamp)
+					ip_tracker[src_ip][dst_ip] = [timestamp]
+
 			else:
-				emptydictionary[src_ip] = {dst_ip : [timestamp]}
-	#print(emptydictionary)
+				ip_tracker[src_ip] = {dst_ip : [timestamp]}
+
+		#elif split_lines[9] == '21' and split_lines[10] == '[SYN]'
+
+
+
+
+
+
+
+
+
+#	print(emptydictionary)
 	#dictionary logic- if src ip is in dictionary increase count, else add to dicationary with value of 1 
 	#if true trigger rule suggestion
                                 #print ssh rule suggestion
