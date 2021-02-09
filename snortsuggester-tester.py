@@ -15,7 +15,6 @@ def pcapconverter(pcap):
 			stripped_line = line.decode().strip()
 			pcapASlist.append(stripped_line)
 
-
 def main():
 	pcapconverter(pcap)
 	#findSSHtraffic(pcapASlist)
@@ -33,7 +32,18 @@ def findscan(pcapASlist):
 		# print(split_lines)
 		src_ip = split_lines[2]
 		dst_ip = split_lines[4]
-		dst_port = split_lines[9]
+#		dst_port = split_lines[9]
+		packet = split_lines[0]
+
+		try:
+			dst_port = int(split_lines[9])
+		except:
+			continue
+		if dst_port > 1000:
+			continue
+
+		# if dst_port == 80:
+		#	print(f'{packet}, {src_ip}, {dst_ip}')
 
 		if src_ip in IPtracker:
 			if dst_ip in IPtracker[src_ip]:
@@ -41,12 +51,17 @@ def findscan(pcapASlist):
 					continue
 				else:
 					IPtracker[src_ip][dst_ip].append(dst_port)
+					print(f'{packet}, {src_ip}, {dst_ip}, {dst_port}')
+
 			else:
 				IPtracker[src_ip][dst_ip] = [dst_port]
+				print(f'{packet}, {src_ip}, {dst_ip}, {dst_port}')
+
 		else:
 			IPtracker[src_ip] = {dst_ip:[dst_port]}
-	print(IPtracker)
+			print(f'{packet}, {src_ip}, {dst_ip}, {dst_port}')
 
+	print(IPtracker)
 
 
 def store_rule(str):
