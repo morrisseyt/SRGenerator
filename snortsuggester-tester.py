@@ -15,7 +15,6 @@ def pcapconverter(pcap):
 			stripped_line = line.decode().strip()
 			pcapASlist.append(stripped_line)
 
-
 def main():
 	pcapconverter(pcap)
 	#findSSHtraffic(pcapASlist)
@@ -43,6 +42,15 @@ def findscan(pcapASlist):
 		src_ip = split_lines[2]
 		dst_ip = split_lines[4]
 		dst_port = split_lines[9]
+		packet = split_lines[0]
+
+		try:
+			dst_port = int(split_lines[9])
+		except:
+			continue
+		if dst_port > 1000:
+			continue
+
 
 		if src_ip in IPtracker:
 			if dst_ip in IPtracker[src_ip]:
@@ -50,6 +58,7 @@ def findscan(pcapASlist):
 					continue
 				else:
 					IPtracker[src_ip][dst_ip].append(dst_port)
+<<<<<<< HEAD
 					if len(IPtracker[src_ip][dst_ip]) > 5:
 						rule = f"[+] Potential Port Scan Dectected. ** Multiple Ports Scanned ** Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} any (msg:'Potential [SYN] Port Scan')"
 						store_rule(rule)
@@ -61,7 +70,19 @@ def findscan(pcapASlist):
 		else:
 			IPtracker[src_ip] = {dst_ip:[dst_port]}
 	#print(IPtracker)
+=======
+					print(f'{packet}, {src_ip}, {dst_ip}, {dst_port}')
 
+			else:
+				IPtracker[src_ip][dst_ip] = [dst_port]
+				print(f'{packet}, {src_ip}, {dst_ip}, {dst_port}')
+
+		else:
+			IPtracker[src_ip] = {dst_ip:[dst_port]}
+			print(f'{packet}, {src_ip}, {dst_ip}, {dst_port}')
+>>>>>>> 462499e941d46e2146ac4e30417944f377cb4b74
+
+	print(IPtracker)
 
 
 def store_rule(str):
