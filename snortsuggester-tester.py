@@ -30,7 +30,16 @@ def findscan(pcapASlist):
 		split_lines = line.split()
 		if len(split_lines) <= 10:
 			continue
-		# print(split_lines)
+		#print(split_lines[8])
+		if split_lines[8] != '\N{RIGHTWARDS ARROW}':
+			continue
+		#print(split_lines)
+		if int(split_lines[9]) > 10000:
+			continue
+		if split_lines[10] != '[SYN]':
+			continue
+
+		packet = split_lines[0]
 		src_ip = split_lines[2]
 		dst_ip = split_lines[4]
 		dst_port = split_lines[9]
@@ -41,11 +50,17 @@ def findscan(pcapASlist):
 					continue
 				else:
 					IPtracker[src_ip][dst_ip].append(dst_port)
+					if len(IPtracker[src_ip][dst_ip]) > 5:
+						rule = f"[+] Potential Port Scan Dectected. ** Multiple Ports Scanned ** Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} any (msg:'Potential [SYN] Port Scan')"
+						store_rule(rule)
 			else:
 				IPtracker[src_ip][dst_ip] = [dst_port]
+				if len(IPtracker[src_ip]) >= 3:
+					rule = f"[+] Potential Port Scan Dectected. ** Multiple IP Addresses Scanned ** Suggested snort rule: alert TCP {src_ip} any -> any any (msg:'Potential [SYN] Port Scan')"
+					store_rule(rule)
 		else:
 			IPtracker[src_ip] = {dst_ip:[dst_port]}
-	print(IPtracker)
+	#print(IPtracker)
 
 
 
