@@ -7,6 +7,8 @@ pcap = sys.argv[1]
 
 stored_rules = []
 pcapASlist = []
+#sys.stdout = open('file', 'w')
+
 
 def pcapconverter(pcap):
 	with subprocess.Popen(["tshark", "-r", pcap], stdout=subprocess.PIPE) as proc:
@@ -21,7 +23,6 @@ def main():
 	findbruteforce(pcapASlist)
 	findscan(pcapASlist)
 	print_summary()
-
 
 def findscan(pcapASlist):
 	IPtracker = {}
@@ -58,7 +59,7 @@ def findscan(pcapASlist):
 					continue
 				else:
 					IPtracker[src_ip][dst_ip].append(dst_port)
-<<<<<<< HEAD
+
 					if len(IPtracker[src_ip][dst_ip]) > 5:
 						rule = f"[+] Potential Port Scan Dectected. ** Multiple Ports Scanned ** Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} any (msg:'Potential [SYN] Port Scan')"
 						store_rule(rule)
@@ -70,19 +71,6 @@ def findscan(pcapASlist):
 		else:
 			IPtracker[src_ip] = {dst_ip:[dst_port]}
 	#print(IPtracker)
-=======
-					print(f'{packet}, {src_ip}, {dst_ip}, {dst_port}')
-
-			else:
-				IPtracker[src_ip][dst_ip] = [dst_port]
-				print(f'{packet}, {src_ip}, {dst_ip}, {dst_port}')
-
-		else:
-			IPtracker[src_ip] = {dst_ip:[dst_port]}
-			print(f'{packet}, {src_ip}, {dst_ip}, {dst_port}')
->>>>>>> 462499e941d46e2146ac4e30417944f377cb4b74
-
-	print(IPtracker)
 
 
 def store_rule(str):
@@ -94,9 +82,13 @@ def store_rule(str):
 		return
 
 
+
+
 def print_summary():
-	for i in stored_rules:
-		print(i)
+	with open('snortrule', 'w') as f:
+		for i in stored_rules:
+			print(i)
+			print(i, file=f)
 
 #function currently not in proudction---------
 def findSSHtraffic(pcapASlist):
