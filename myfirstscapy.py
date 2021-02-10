@@ -1,11 +1,11 @@
-! /usr/bin/env python3
+#! /usr/bin/env python3
 
 import sys
 from scapy.all import *
 
 ### below packages used for steps 2 - 3
-#from prettytable import PrettyTable
-#from collections import Counter
+from prettytable import PrettyTable
+from collections import Counter
 
 ### Read pcap from stdin
 
@@ -16,14 +16,16 @@ packets = rdpcap(data)
 
 # for packet in packets:
 #	if (packet.haslayer(ICMP)):
-#         print(f"ICMP code: {packet.getlayer(ICMP).code}")
+#	 print(f"ICMP code: {packet.getlayer(ICMP).code}")
 
 ### Count packets in pcap
 
-# count = 0
-# for packet in packets:
-#	count +=1
-# print (count)
+count = 0
+for packet in packets:
+	count +=1
+print (count)
+
+# packet[1].show()
 
 ### Print session streams 
 
@@ -33,8 +35,8 @@ packets = rdpcap(data)
 
 ### Returns command that wld generate the packet in question
 
-#  for packet in packets:
-#        print (packet.command())
+#for packet in packets:
+#	print (packet.command())
 
 ### Fills a format string with fields values of the packet
 
@@ -54,23 +56,23 @@ packets = rdpcap(data)
 
 ### Step 2: Read and append
 
-#srcIP = []
-#for packet in packets:
-#	if IP in packet:
-#		try:
-#			srcIP.append(packet[IP].src)
-#		except:
-#			pass
+srcIP = []
+for packet in packets:
+	if IP in packet:
+		try:
+			srcIP.append(packet[IP].src)
+		except:
+			pass
 
 ### Step 3: Count
 
-#count=Counter()
-#for ip in srcIP:
-#	count[ip] += 1
+count=Counter()
+for ip in srcIP:
+	count[ip] += 1
 
 ### Step 4: Table and Print 
 
-#table = PrettyTable(["IP", "Count"])
-#for ip, count in count.most_common():
-#	table.add_row([ip, count])
-#print(table)
+table = PrettyTable(["IP", "Count"])
+for ip, count in count.most_common():
+	table.add_row([ip, count])
+print(table)
