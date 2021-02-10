@@ -51,8 +51,8 @@ def findscan(pcapASlist):
 		except:
 			continue
 
-		if dst_port > 1000: #review with team
-			continue
+	#	if dst_port > 1000: #review with team
+	#		continue
 		if src_ip in IPtracker:
 			if dst_ip in IPtracker[src_ip]:
 				if dst_port in IPtracker[src_ip][dst_ip]:
@@ -154,7 +154,7 @@ def findbruteforce(pcapASlist):
 							if ssh_ip not in ssh_ips:
 								rule = ["sshBruteForce", packet, src_ip, dst_ip, 22]
 								ssh_ips.append(ssh_ip)
-								store_rule(rule)
+								stored_rules.append(rule)
 					else:
 						ssh_tracker[src_ip][dst_ip] = [timestamp]
 						#above line overwrites timestamps for src_ip and dst_ip combo if the interval is more than 25 seconds
@@ -177,7 +177,7 @@ def findbruteforce(pcapASlist):
 							if ftp_ip not in ftp_ips:
 								rule = ["ftpBruteForce", packet, src_ip, dst_ip, 21]
 								ftp_ips.append(ftp_ip)
-								store_rule(rule)
+								stored_rules.append(rule)
 
 					else:
 						ftp_tracker[src_ip][dst_ip] = [timestamp]
