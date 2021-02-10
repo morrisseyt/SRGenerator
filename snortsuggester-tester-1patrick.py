@@ -8,6 +8,16 @@ pcap = sys.argv[1]
 stored_rules = []
 pcapASlist = []
 
+#defining colors for print summary
+BR = '\033[1;31m' # bold red text
+BW = '\033[1;37m' # bold white text
+BB = '\033[1;34m' # bold blue text
+BG = '\033[1;32m' # bold green
+BY = '\033[1;33m' # bold yellow
+DC = '\033[0m' #default color
+BM = '\033[1;35m' #bold magenta
+
+
 def pcapconverter(pcap):
 	with subprocess.Popen(["tshark", "-r", pcap], stdout=subprocess.PIPE) as proc:
 		output = proc.stdout.readlines()
@@ -82,9 +92,35 @@ def findscan(pcapASlist):
 			IPtracker[src_ip] = {dst_ip:[dst_port]}
 
 def print_summary():
-	#for i in stored_rules:
-	#	print(i)
-	print(stored_rules)
+	SID_counter = 1000000
+	file_name = 'something'
+	with open(file_name, "w") as f:
+		print("\n")
+		print(BW + '---------- Snort Rule Suggester Summary ------------')
+		print('##---------- Snort Rule Suggester Summary ------------', file=f) 
+		print(f'a file containing this information can be found in the current directory: {file_name}')
+		print("")
+		print("", file=f)
+
+		for rule in stored_rules:
+			SID_counter += 1
+			if rule[0] == 'sshBruteForce':
+				print(f"{DC}------------------------------------------------------------------------------------------")
+				print(f'[+]{BR} Potential Attempted SSH Brute Force:')
+				print(f'{DC}[++] This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.')
+				print(f'[++]{DC} The packet that triggered this alert is {BB}{rule[1]}{DC}.')
+				print(f'[++] We suggest using the following rule to alert on any future traffic:')
+				print(f"[++]{BY} alert TCP {rule[2]} any -> {rule[3]} {rule[4]} (msg:'Potential SSH Brute Force';sid:{SID_counter};)")
+				print("")
+				#begin print to file
+				print("##------------------------------------------------------------------------------------------", file=f)
+				print('## Potential Attempted SSH Brute Force:', file=f)
+				print('## This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.', file=f)
+				print(f'## The packet that triggered this alert is {rule[1]}.', file=f)
+				print('## We suggest using the following rule to alert on any future traffic:', file=f)
+				print(f"alert TCP {rule[2]} any -> {rule[3]} {rule[4]} (msg:'Potential SSH Brute Force';sid:{SID_counter};)", file=f)
+				print("", file=f)
+
 
 # function currently not in proudction---------
 def findSSHtraffic(pcapASlist):
