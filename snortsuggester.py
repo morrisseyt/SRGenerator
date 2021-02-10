@@ -15,7 +15,6 @@ def pcapconverter(pcap):
 			stripped_line = line.decode().strip()
 			pcapASlist.append(stripped_line)
 
-
 def main():
 	pcapconverter(pcap)
 	#findSSHtraffic(pcapASlist)
@@ -23,61 +22,71 @@ def main():
 	findscan(pcapASlist)
 	print_summary()
 
-
 def findscan(pcapASlist):
 	IPtracker = {}
+	synsweep_ips = []
+	portscan_ips = []
 	for line in pcapASlist:
 		split_lines = line.split()
+
+		#below logic filters out packets with less than 10 fields,
+		#packets where destPORT is greater than 10000,
+		#packets where index 10 is not a [SYN] flag.
+
 		if len(split_lines) <= 10:
 			continue
-		#print(split_lines[8])
 		if split_lines[8] != '\N{RIGHTWARDS ARROW}':
 			continue
-		#print(split_lines)
-		if int(split_lines[9]) > 10000:
+		if int(split_lines[9]) > 10000:  #review with team
 			continue
 		if split_lines[10] != '[SYN]':
 			continue
-
-		packet = split_lines[0]
 		src_ip = split_lines[2]
 		dst_ip = split_lines[4]
 		dst_port = split_lines[9]
+		packet = split_lines[0]
 
+		try:
+			dst_port = int(split_lines[9])
+		except:
+			continue
+
+	#	if dst_port > 1000: #review with team
+	#		continue
 		if src_ip in IPtracker:
 			if dst_ip in IPtracker[src_ip]:
 				if dst_port in IPtracker[src_ip][dst_ip]:
 					continue
 				else:
 					IPtracker[src_ip][dst_ip].append(dst_port)
+
 					if len(IPtracker[src_ip][dst_ip]) > 5:
-						rule = f"[+] Potential Port Scan Dectected. ** Multiple Ports Scanned ** Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} any (msg:'Potential [SYN] Port Scan')"
-						store_rule(rule)
+						portscan_ip = [src_ip, dst_ip]
+
+						#below logic checks to see if current sourceIP and destIP have been logged as triggering a rule.
+						#similar logic is seen for each code that has the potential to trigger a rule.
+
+						if portscan_ip not in portscan_ips:
+							rule = ['MultiplePortScan', packet, src_ip, dst_ip, 'any']
+							portscan_ips.append(portscan_ip) #adds srcIP and dstIP to a 'dupe checking' list
+							stored_rules.append(rule) #adds rule to list to be used when printing the summary
 			else:
 				IPtracker[src_ip][dst_ip] = [dst_port]
 				if len(IPtracker[src_ip]) >= 3:
-					rule = f"[+] Potential Port Scan Dectected. ** Multiple IP Addresses Scanned ** Suggested snort rule: alert TCP {src_ip} any -> any any (msg:'Potential [SYN] Port Scan')"
-					store_rule(rule)
+					synsweep_ip = [src_ip, dst_ip]
+					if synsweep_ip not in synsweep_ips:
+						rule = ['SynSweep', packet, src_ip, dst_ip, 'any']
+						synsweep_ips.append(synsweep_ip)
+						stored_rules.append(rule)
 		else:
 			IPtracker[src_ip] = {dst_ip:[dst_port]}
-	#print(IPtracker)
-
-
-
-def store_rule(str):
-
-	if str in stored_rules:
-		return
-	else:
-		stored_rules.append(str)
-		return
-
 
 def print_summary():
-	for i in stored_rules:
-		print(i)
+	#for i in stored_rules:
+	#	print(i)
+	print(stored_rules)
 
-#function currently not in proudction---------
+# function currently not in proudction---------
 def findSSHtraffic(pcapASlist):
 	SSHcounter = 0
 
@@ -108,6 +117,9 @@ def findSSHtraffic(pcapASlist):
 def findbruteforce(pcapASlist):
 	ssh_tracker = {}
 	ftp_tracker = {}
+	ssh_ips = []
+	ftp_ips = []
+
 	#loop through list
 
 	for line in pcapASlist:
@@ -118,6 +130,7 @@ def findbruteforce(pcapASlist):
 		src_ip = split_lines[2]
 		dst_ip = split_lines[4]
 		timestamp = split_lines[1]
+		packet = split_lines[0]
 
 		#logic destination port 22
 
@@ -137,13 +150,14 @@ def findbruteforce(pcapASlist):
 
 
 						if len(ssh_tracker[src_ip][dst_ip]) > 10:
-							rule = f"[+] Potential SSH Brute Force Dectected. Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} 22 (msg:'Potential SSH Brute Force')"
-							store_rule(rule)
+							ssh_ip = [src_ip, dst_ip]
+							if ssh_ip not in ssh_ips:
+								rule = ["sshBruteForce", packet, src_ip, dst_ip, 22]
+								ssh_ips.append(ssh_ip)
+								stored_rules.append(rule)
 					else:
 						ssh_tracker[src_ip][dst_ip] = [timestamp]
 						#above line overwrites timestamps for src_ip and dst_ip combo if the interval is more than 25 seconds
-
-
 				else:
 					ssh_tracker[src_ip][dst_ip] = [timestamp]
 			else:
@@ -159,28 +173,20 @@ def findbruteforce(pcapASlist):
 						ftp_tracker[src_ip][dst_ip].append(timestamp)
 
 						if len(ftp_tracker[src_ip][dst_ip]) > 10:
-							rule = f"[+] Potential FTP Brute Force Dectected: Suggested snort rule: alert TCP {src_ip} any -> {dst_ip} 21 (msg:'Potential FTP Brute Force')"
-
-							store_rule(rule)
+							ftp_ip = [src_ip, dst_ip]
+							if ftp_ip not in ftp_ips:
+								rule = ["ftpBruteForce", packet, src_ip, dst_ip, 21]
+								ftp_ips.append(ftp_ip)
+								stored_rules.append(rule)
 
 					else:
 						ftp_tracker[src_ip][dst_ip] = [timestamp]
-
 				else:
 					ftp_tracker[src_ip][dst_ip] = [timestamp]
-
-
 			else:
 				ftp_tracker[src_ip] = {dst_ip : [timestamp]}
 
-
-
-
-
-
-
-
-#	print(emptydictionary)
+#----START OF GENERAL NOTES AND PSEUDO CODE -----------
 	#dictionary logic- if src ip is in dictionary increase count, else add to dicationary with value of 1 
 	#if true trigger rule suggestion
                                 #print ssh rule suggestion
@@ -204,5 +210,5 @@ def findbruteforce(pcapASlist):
 
 
 
-
+#CALLS MAIN FUNCTION
 main()
