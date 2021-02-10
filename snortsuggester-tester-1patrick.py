@@ -93,19 +93,21 @@ def findscan(pcapASlist):
 
 def print_summary():
 	SID_counter = 1000000
-	file_name = 'something'
+	file_name = f'{sys.argv[1]}.rules'
 	with open(file_name, "w") as f:
 		print("\n")
-		print(BW + '---------- Snort Rule Suggester Summary ------------')
-		print('##---------- Snort Rule Suggester Summary ------------', file=f) 
-		print(f'a file containing this information can be found in the current directory: {file_name}')
+		print(BW + '----------------------- Snort Rule Suggester Summary --------------------------')
+		print('##------------------- Snort Rule Suggester Summary -----------------------', file=f) 
+		print(f'{DC}a file containing this information can be found:{BG} {file_name}{DC}')
+		print(f'the file can be moved/copied into {BG}/etc/snort/rules{DC} for immediate implementation')
 		print("")
+		print(f'## The below rules were suggested from a pcap file:{sys.argv[1]}', file=f)
 		print("", file=f)
 
 		for rule in stored_rules:
 			SID_counter += 1
 			if rule[0] == 'sshBruteForce':
-				print(f"{DC}------------------------------------------------------------------------------------------")
+				print(f"{DC}-" * 100)
 				print(f'[+]{BR} Potential Attempted SSH Brute Force:')
 				print(f'{DC}[++] This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.')
 				print(f'[++]{DC} The packet that triggered this alert is {BB}{rule[1]}{DC}.')
@@ -120,6 +122,63 @@ def print_summary():
 				print('## We suggest using the following rule to alert on any future traffic:', file=f)
 				print(f"alert TCP {rule[2]} any -> {rule[3]} {rule[4]} (msg:'Potential SSH Brute Force';sid:{SID_counter};)", file=f)
 				print("", file=f)
+
+			elif rule[0] == 'SynSweep':
+				print(f"{DC}-" * 100)
+				print(f'[+]{BR} Potential Attempted SYN Sweep')
+				print(f'{DC}[++] This rule was triggered by a single source IP sending SYN packets to 3 or more different destination IPs')
+				print(f'[++] The packet that triggered this alert is {BB}{rule[1]}{DC}.')
+				print(f'[++] We suggest using the following rule to alert on any future traffic:')
+				print(f"[++]{BY} alert TCP {rule[2]} any -> {rule[3]} {rule[4]} (msg:'Potential SYN Sweep';sid:{SID_counter};)")
+				print("")
+				#begin print to file
+				print('##-----------------------------------------------------------------------------------------', file=f)
+				print('## Potential Attempted SYN Sweep', file=f)
+				print('## This rule was triggered by a single source IP sending SYN packets to 3 or more different destination IPs', file=f)
+				print(f'## The packet that triggered this alert is {rule[1]}.', file=f)
+				print('## We suggest using the following rule to alert on any future traffic:', file=f)
+				print(f"alert TCP {rule[2]} any -> {rule[3]} {rule[4]} (msg:'Potential SYN Sweep';sid:{SID_counter};", file=f)
+				print("", file=f)
+
+			elif rule[0] == 'ftpBruteForce':
+				print(f"{DC}------------------------------------------------------------------------------------------")
+				print(f'[+]{BR} Potential Attempted FTP Brute Force:')
+				print(f'{DC}[++] This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.')
+				print(f'[++]{DC} The packet that triggered this alert is {BB}{rule[1]}{DC}.')
+				print(f'[++] We suggest using the following rule to alert on any future traffic:')
+				print(f"[++]{BY} alert TCP {rule[2]} any -> {rule[3]} {rule[4]} (msg:'Potential FTP Brute Force';sid:{SID_counter};)")
+				print("")
+				#begin print to file
+				print("##------------------------------------------------------------------------------------------", file=f)
+				print('## Potential Attempted FTP Brute Force:', file=f)
+				print('## This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.', file=f)
+				print(f'## The packet that triggered this alert is {rule[1]}.', file=f)
+				print('## We suggest using the following rule to alert on any future traffic:', file=f)
+				print(f"alert TCP {rule[2]} any -> {rule[3]} {rule[4]} (msg:'Potential FTP Brute Force';sid:{SID_counter};)", file=f)
+				print("", file=f)
+
+
+
+			elif rule[0] =='MultiplePortScan':
+				print(f'{DC}-------------------------------------------------------')
+				print(f'[+]{BR} Potential Attempted Port Scan:')
+				print(f'{DC}[++] This rule was triggered by a single source IP sending SYN requests to more than 5 ports on the same destination IP')
+				print(f'[++]{DC} The packet that triggered this alert is {BB}{rule[1]}{DC}.')
+				print(f'[++] We suggest using the following rule to alert on any future traffic:')
+				print(f"[++]{BY} alert TCP {rule[2]} any -> {rule[3]} any (msg: 'Potential Port Scan against {rule[3]}';sid:{SID_counter};)")
+				print("")
+				#begin print to file
+				print("##----------------------------------------------------------------------", file=f)
+				print('## Potential Attempted Port Scan:', file=f)
+				print('## This rule was triggered by a single source IP sending SYN requests to more than 5 ports on the same destination IP', file=f)
+				print(f'## The packet that triggered this alert is {rule[1]}.', file=f)
+				print(f'## We suggest using the following rule to alert on any future traffic:', file=f)
+				print(f"alert TCP {rule[2]} any -> {rule[3]} any (msg: 'Potential Port Scan against {rule[3]}';sid:{SID_counter};)", file=f)
+				print("", file=f)
+
+
+
+
 
 
 # function currently not in proudction---------
