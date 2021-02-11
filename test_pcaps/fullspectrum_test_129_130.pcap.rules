@@ -1,0 +1,46 @@
+##------------------- Snort Rule Suggester Summary -----------------------
+## Total Packets Analyzed: 33242
+## The below rules were suggested from a pcap file:test_pcaps/fullspectrum_test_129_130.pcap
+
+[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-
+## Potential Attempted SSH Brute Force:
+## This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.
+## The packet that triggered this alert is 79.
+## We suggest using the following rule to alert on any future traffic:
+alert TCP 192.168.241.128 any -> 192.168.241.129 22 (msg:'Potential SSH Brute Force';sid:1000001;)
+
+[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-
+## Potential Attempted FTP Brute Force:
+## This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.
+## The packet that triggered this alert is 16862.
+## We suggest using the following rule to alert on any future traffic:
+alert TCP 192.168.241.128 any -> 192.168.241.129 21 (msg:'Potential FTP Brute Force';sid:1000002;)
+
+[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-
+## Potential Attempted FTP Brute Force:
+## This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.
+## The packet that triggered this alert is 21700.
+## We suggest using the following rule to alert on any future traffic:
+alert TCP 192.168.241.128 any -> 192.168.241.130 21 (msg:'Potential FTP Brute Force';sid:1000003;)
+
+[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-
+## Potential Attempted SSH Brute Force:
+## This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.
+## The packet that triggered this alert is 22490.
+## We suggest using the following rule to alert on any future traffic:
+alert TCP 192.168.241.128 any -> 192.168.241.130 22 (msg:'Potential SSH Brute Force';sid:1000004;)
+
+[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-
+## Potential Attempted Port Scan:
+## This rule was triggered by a single source IP sending SYN requests to more than 5 ports on the same destination IP
+## The packet that triggered this alert is 25984.
+## We suggest using the following rule to alert on any future traffic:
+alert TCP 192.168.241.128 any -> 192.168.241.129 any (msg: 'Potential Port Scan against 192.168.241.129';sid:1000005;)
+
+[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-[0m-
+## Potential Attempted Port Scan:
+## This rule was triggered by a single source IP sending SYN requests to more than 5 ports on the same destination IP
+## The packet that triggered this alert is 30554.
+## We suggest using the following rule to alert on any future traffic:
+alert TCP 192.168.241.128 any -> 192.168.241.130 any (msg: 'Potential Port Scan against 192.168.241.130';sid:1000006;)
+
