@@ -2,11 +2,16 @@
 
 import sys
 import subprocess
+from prettytable import PrettyTable
+from collections import Counter
 
 pcap = sys.argv[1]
-
 stored_rules = []
 pcapASlist = []
+counter = 0
+conversations_table = []
+
+list_table = PrettyTable(["IP Addresses", "Packets Sent"])
 
 #defining colors for print summary
 BR = '\033[1;31m' # bold red text
@@ -30,7 +35,9 @@ def main():
 	#findSSHtraffic(pcapASlist)
 	findbruteforce(pcapASlist)
 	findscan(pcapASlist)
+	packetcounter(pcapASlist)
 	print_summary()
+
 
 def findscan(pcapASlist):
 	IPtracker = {}
@@ -91,23 +98,53 @@ def findscan(pcapASlist):
 		else:
 			IPtracker[src_ip] = {dst_ip:[dst_port]}
 
+def packetcounter(pcapASlist):
+	global counter
+	for line in pcapASlist:
+		counter += 1
+		split_lines = line.split()
+		proto = split_lines[5]
+		src_ip = split_lines[2]
+		dst_ip = split_lines[4]
+		if proto == 'ARP' or proto == 'LLDP':
+			continue
+
+		conversations_table.append([src_ip, dst_ip])
+
+
+	return
+
+
 def print_summary():
+	count = Counter()
 	SID_counter = 1000000
 	file_name = f'{sys.argv[1]}.rules'
+	line = f'{DC}-'* 100
+	for i in conversations_table:
+		src = i[0]
+		dst = i[1]
+		count[f'{DC}Source IP:{BM} {src}{DC}, Destination IP:{BM} {dst}{BW}'] += 1
+
+	for ips, count in count.most_common():
+		list_table.add_row([ips, count])
+
 	with open(file_name, "w") as f:
 		print("\n")
-		print(BW + '----------------------- Snort Rule Suggester Summary --------------------------')
+		print(BW + '--------------------------------- Snort Rule Suggester Summary ------------------------------------')
+		print(f'\nThe below table summarizes layer 3 recorded traffic by Source IP and Destination IP\n')
+		print(list_table)
 		print('##------------------- Snort Rule Suggester Summary -----------------------', file=f) 
-		print(f'{DC}a file containing this information can be found:{BG} {file_name}{DC}')
-		print(f'the file can be moved/copied into {BG}/etc/snort/rules{DC} for immediate implementation')
-		print("")
+		print(f'{DC}\n[+] A file containing the below information can be found at:{BG} {file_name}{DC}')
+		print(f'[+] The file can be moved/copied into {BG}/etc/snort/rules{DC} for immediate implementation')
+		print(f'\n[+]{BW} Total Packets Analyzed:{BB} {counter}\n{DC}')
+		print(f'## Total Packets Analyzed: {counter}', file=f)
 		print(f'## The below rules were suggested from a pcap file:{sys.argv[1]}', file=f)
 		print("", file=f)
 
 		for rule in stored_rules:
 			SID_counter += 1
 			if rule[0] == 'sshBruteForce':
-				print(f"{DC}-" * 100)
+				print(line)
 				print(f'[+]{BR} Potential Attempted SSH Brute Force:')
 				print(f'{DC}[++] This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.')
 				print(f'[++]{DC} The packet that triggered this alert is {BB}{rule[1]}{DC}.')
@@ -115,7 +152,7 @@ def print_summary():
 				print(f"[++]{BY} alert TCP {rule[2]} any -> {rule[3]} {rule[4]} (msg:'Potential SSH Brute Force';sid:{SID_counter};)")
 				print("")
 				#begin print to file
-				print("##------------------------------------------------------------------------------------------", file=f)
+				print(line, file=f)
 				print('## Potential Attempted SSH Brute Force:', file=f)
 				print('## This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.', file=f)
 				print(f'## The packet that triggered this alert is {rule[1]}.', file=f)
@@ -124,7 +161,7 @@ def print_summary():
 				print("", file=f)
 
 			elif rule[0] == 'SynSweep':
-				print(f"{DC}-" * 100)
+				print(line)
 				print(f'[+]{BR} Potential Attempted SYN Sweep')
 				print(f'{DC}[++] This rule was triggered by a single source IP sending SYN packets to 3 or more different destination IPs')
 				print(f'[++] The packet that triggered this alert is {BB}{rule[1]}{DC}.')
@@ -132,7 +169,7 @@ def print_summary():
 				print(f"[++]{BY} alert TCP {rule[2]} any -> {rule[3]} {rule[4]} (msg:'Potential SYN Sweep';sid:{SID_counter};)")
 				print("")
 				#begin print to file
-				print('##-----------------------------------------------------------------------------------------', file=f)
+				print(line, file=f)
 				print('## Potential Attempted SYN Sweep', file=f)
 				print('## This rule was triggered by a single source IP sending SYN packets to 3 or more different destination IPs', file=f)
 				print(f'## The packet that triggered this alert is {rule[1]}.', file=f)
@@ -141,7 +178,7 @@ def print_summary():
 				print("", file=f)
 
 			elif rule[0] == 'ftpBruteForce':
-				print(f"{DC}------------------------------------------------------------------------------------------")
+				print(line)
 				print(f'[+]{BR} Potential Attempted FTP Brute Force:')
 				print(f'{DC}[++] This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.')
 				print(f'[++]{DC} The packet that triggered this alert is {BB}{rule[1]}{DC}.')
@@ -149,7 +186,7 @@ def print_summary():
 				print(f"[++]{BY} alert TCP {rule[2]} any -> {rule[3]} {rule[4]} (msg:'Potential FTP Brute Force';sid:{SID_counter};)")
 				print("")
 				#begin print to file
-				print("##------------------------------------------------------------------------------------------", file=f)
+				print(line, file=f)
 				print('## Potential Attempted FTP Brute Force:', file=f)
 				print('## This rule was triggered by 10 or more SYN packets from a single source IP within a 25 second timeframe.', file=f)
 				print(f'## The packet that triggered this alert is {rule[1]}.', file=f)
@@ -160,7 +197,7 @@ def print_summary():
 
 
 			elif rule[0] =='MultiplePortScan':
-				print(f'{DC}-------------------------------------------------------')
+				print(line)
 				print(f'[+]{BR} Potential Attempted Port Scan:')
 				print(f'{DC}[++] This rule was triggered by a single source IP sending SYN requests to more than 5 ports on the same destination IP')
 				print(f'[++]{DC} The packet that triggered this alert is {BB}{rule[1]}{DC}.')
@@ -168,7 +205,7 @@ def print_summary():
 				print(f"[++]{BY} alert TCP {rule[2]} any -> {rule[3]} any (msg: 'Potential Port Scan against {rule[3]}';sid:{SID_counter};)")
 				print("")
 				#begin print to file
-				print("##----------------------------------------------------------------------", file=f)
+				print(line, file=f)
 				print('## Potential Attempted Port Scan:', file=f)
 				print('## This rule was triggered by a single source IP sending SYN requests to more than 5 ports on the same destination IP', file=f)
 				print(f'## The packet that triggered this alert is {rule[1]}.', file=f)
