@@ -1,6 +1,6 @@
 # SRG
 
-SRG, short for the Snort Rule Suggester, is a command-line tool that can be use to detect potentially malicious network traffic. 
+SRG, short for the Snort Rule Suggester, is a command-line tool that can be used to detect potentially malicious network traffic. 
 
 # About
 
@@ -15,10 +15,11 @@ SRG, short for the Snort Rule Suggester, is a command-line tool that can be use 
 * Provides a color-coded summary table of layer 3 traffic recorded in the file including: source IP, destination IP, and number of packets sent in each conversation
 * Detects and alerts to potential SSH brute-force traffic (source port 22)
 * Detects and alerts to potential FTP brute-force traffic (source port 21)
-* Detects and alerts to port scanning activity on a single host
+* Detects and alerts to port scanning activity on a single host 
 * Detects and alerts to network scanning activity on multiple hosts
 * Generates and prints a Snort rule for each instance described above
 * Outputs a .rules file of the recommended rules for easy implementation and use with Snort
+* Error-checking
 
 # Tech
 
@@ -42,6 +43,9 @@ $ ./snortsuggester.py <file.pcap>
 
 sample output
 
+```
+screenshot placholder
+````
 
 # Contributors
 
