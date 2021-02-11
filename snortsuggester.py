@@ -5,7 +5,6 @@ import subprocess
 from prettytable import PrettyTable
 from collections import Counter
 
-pcap = sys.argv[1]
 stored_rules = []
 pcapASlist = []
 counter = 0
@@ -22,8 +21,19 @@ BY = '\033[1;33m' # bold yellow
 DC = '\033[0m' #default color
 BM = '\033[1;35m' #bold magenta
 
+def error_check():
+	if len(sys.argv) != 2:
+		print(f'[-]{BR} Error:{DC} Expecting exactly 1 arguement.  Usage: ./snortsuggester.py file.pcap')
+		exit()
+	file = sys.argv[1]
+		# below conditional checks if the last 5 characters of the file variable that is now sys.argv[1] is .pcap
+	if file[-5:] != '.pcap':
+		print(f'[-]{BR} Error:{DC} Expecting .pcap file. Usage: ./snortsuggester.py file.pcap')
+		exit()
+	return sys.argv[1] # sys.argv[1] is returned to the main function here
 
 def pcapconverter(pcap):
+
 	with subprocess.Popen(["tshark", "-r", pcap], stdout=subprocess.PIPE) as proc:
 		output = proc.stdout.readlines()
 		for line in output:
@@ -31,8 +41,9 @@ def pcapconverter(pcap):
 			pcapASlist.append(stripped_line)
 
 def main():
+	pcap = error_check()
 	pcapconverter(pcap)
-	#findSSHtraffic(pcapASlist)
+	#findSSHtraffic(pcapASlist) #function exists in code but is not in use
 	findbruteforce(pcapASlist)
 	findscan(pcapASlist)
 	packetcounter(pcapASlist)
@@ -54,7 +65,7 @@ def findscan(pcapASlist):
 			continue
 		if split_lines[8] != '\N{RIGHTWARDS ARROW}':
 			continue
-		if int(split_lines[9]) > 10000:  #review with team
+		if int(split_lines[9]) > 10000:
 			continue
 		if split_lines[10] != '[SYN]':
 			continue
@@ -68,8 +79,6 @@ def findscan(pcapASlist):
 		except:
 			continue
 
-	#	if dst_port > 1000: #review with team
-	#		continue
 		if src_ip in IPtracker:
 			if dst_ip in IPtracker[src_ip]:
 				if dst_port in IPtracker[src_ip][dst_ip]:
@@ -106,20 +115,24 @@ def packetcounter(pcapASlist):
 		proto = split_lines[5]
 		src_ip = split_lines[2]
 		dst_ip = split_lines[4]
-		if proto == 'ARP' or proto == 'LLDP':
+		if proto == 'ARP' or proto == 'LLDP': # omitting traffic that does not travel along layer 3
 			continue
-
 		conversations_table.append([src_ip, dst_ip])
-
 
 	return
 
 
 def print_summary():
+
+	if counter == 0: # error check: if no lines processed, print the error not blank outputs
+		print(f'[-]{BR} Error:{DC} Check file format. pcap format is required.')
+		exit()
 	count = Counter()
 	SID_counter = 1000000
 	file_name = f'{sys.argv[1]}.rules'
 	line = f'{DC}-'* 100
+
+	# next two for loops build out the IP Conversation table that is printed with the summary
 	for i in conversations_table:
 		src = i[0]
 		dst = i[1]
@@ -317,29 +330,6 @@ def findbruteforce(pcapASlist):
 					ftp_tracker[src_ip][dst_ip] = [timestamp]
 			else:
 				ftp_tracker[src_ip] = {dst_ip : [timestamp]}
-
-#----START OF GENERAL NOTES AND PSEUDO CODE -----------
-	#dictionary logic- if src ip is in dictionary increase count, else add to dicationary with value of 1 
-	#if true trigger rule suggestion
-                                #print ssh rule suggestion
-		#print(f"Incoming SSH Handshake from {src_ip}. Suggested SNORT Rule: alert TCP {src_ip} any -> any 22 (msg:'Incoming SSH Handshake')")
-
-
-# take pcap logfile (output), and turn it into an iterable format for python (each packet is made into a list, once that list
-# has been analyzed and parsed, we move to the next list) 
-
-
-# loop through the list (output) and look for incoming ssh SYN packets from source to DST.PORT 22 ***(for POC, we are
-# searching for incoming SSH SYN from any source)***
-
-# Create our if, elif, else logic to analyze results and print out SNORT rule suggestion
-
-# Close out our function
-
-
-
-
-
 
 
 #CALLS MAIN FUNCTION
