@@ -23,19 +23,15 @@ SRG, short for the Snort Rule Suggester, is a command-line tool that can be used
 
 # Tech
 
-SRG was built using Python 3 and requires the modules detailed in the next section. 
-SRG reads provided packet captures (pcaps) using [TShark](https://www.wireshark.org/docs/man-pages/tshark.html), the command line tool for Wireshark.
+SRG was built in Python 3 using the sys and subprocess modules, as well as the counter and PrettyTable modules from the collections and [PrettyTable](https://pypi.org/project/prettytable/) libraries.
+
+SRG reads a provided packet captures (pcap) using TShark, the command line tool for [Wireshark](https://www.wireshark.org/download.html).
 
 # Installation & Usage
 
-```
-import sys
-import subprocess
-from prettytable import PrettyTable
-from collections import Counter
-```
+download <file name> and make executable
 
-to run from the command line
+to run from the command line:
 
 ```
 $ ./snortsuggester.py <file.pcap>
