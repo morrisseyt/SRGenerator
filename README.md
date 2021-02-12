@@ -29,12 +29,11 @@ SRG reads the provided packet capture (pcap) using TShark, the command line tool
 
 # Installation & Usage
 
-download <file name> and make executable
-
-to run from the command line:
+Download `snortsuggester.py` into your desired working directory and make executable `chmod +x`
+Run the script on a pcap as follows:
 
 ```
-$ ./snortsuggester.py <file.pcap>
+$ ./snortsuggester.py <path/file.pcap>
 ```
 
 sample output
