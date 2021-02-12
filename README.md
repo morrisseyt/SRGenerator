@@ -6,7 +6,7 @@ SRG, short for the Snort Rule Suggester, is a command-line tool that can be used
 
 **SRG** was created to detect four types of potentially malicious network activity by analyzing a network capture file, or pcap: SSH brute-forcing, FTP brute-forcing, network host-scanning, and port-scanning activity. Upon detection of one or more of these behaviors, SRG alerts the user by printing a summary of the triggering behavior. SRG also suggests an appropriate **Snort** rule for users to implement, allowing them to detect, alert, and log similar activity in the future.
 
-**Snort** is a popular, easy-to-use network intrusion detection system (NIDS) can be used as a straight packet sniffer like tcpdump, a packet logger (useful for network traffic debugging, etc), or as a full blown network intrusion prevention system. The rules provided assume use of Snort as an NIDS.
+**Snort** is a popular, easy-to-use network intrusion detection system (IDS) can be used as a straight packet sniffer like tcpdump, a packet logger (useful for network traffic debugging, etc), or as a full blown network intrusion prevention system. The rules provided assume use of Snort as an NIDS.
 
 # Features
 
@@ -23,7 +23,7 @@ SRG, short for the Snort Rule Suggester, is a command-line tool that can be used
 
 # Tech
 
-SRG was built in Python 3 using sys, subprocess, and counter modules, as well as [PrettyTable](https://pypi.org/project/prettytable/), as seen in the snortsuggeter.py. The script reads the provided packet capture (pcap) using TShark, the command line tool for [Wireshark](https://www.wireshark.org/download.html).
+SRG was built in Python 3 using sys, subprocess, and counter modules, as well as [PrettyTable](https://pypi.org/project/prettytable/), as seen in the SRGenerator.py. The script reads the provided packet capture (pcap) using TShark, the command line tool for [Wireshark](https://www.wireshark.org/download.html).
 
 # Installation & Usage
 
