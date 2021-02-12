@@ -31,14 +31,16 @@ Download `snortsuggester.py` into your desired working directory and make execut
 Run the script on a pcap as follows:
 
 ```
-$ ./snortsuggester.py <path/file.pcap>
+$ ./snortsuggester.py <path/yourfile.pcap>
 ```
 
-sample output
+**Sample output: Pcap Summary**
 
-```
-screenshot placholder
-````
+![Screenshot1](https://github.com/morrisseyt/SRG--Snort-Rule-Generator/blob/main/images/snortsuggester_output_table.png)
+
+**Sample output: Alert**
+
+![Screenshot2](https://github.com/morrisseyt/SRG--Snort-Rule-Generator/blob/main/images/snortsuggester_output_alert.png)
 
 # Notes
 
