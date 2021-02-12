@@ -57,7 +57,7 @@ Placeholder for note on SID numbering
 * [Wireshark](https://www.wireshark.org/download.html)
 * [TShark](https://www.wireshark.org/docs/man-pages/tshark.html)
 * [Snort - man pages](https://www.snort.org/documents)
-* [Sample pcaps](https://gitlab.com/wireshark/wireshark/-/wikis/SampleCaptures)
+* [Pcaps: Links and samples](https://gitlab.com/wireshark/wireshark/-/wikis/SampleCaptures)
 * Brute Force attacks
 * Another link
 * More to read
