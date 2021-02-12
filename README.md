@@ -2,6 +2,8 @@
 
 SRG, short for the Snort Rule Suggester, is a command-line tool that can be used to detect potentially malicious network traffic. 
 
+![logo](https://github.com/morrisseyt/SRG--Snort-Rule-Generator/blob/main/images/Drawing.jpg)
+
 # About
 
 **SRG** was created to detect four types of potentially malicious network activity by analyzing a network capture file, or pcap: SSH brute-forcing, FTP brute-forcing, network host-scanning, and port-scanning activity. Upon detection of one or more of these behaviors, SRG alerts the user by printing a summary of the triggering behavior. SRG also suggests an appropriate **Snort** rule for users to implement, allowing them to detect, alert, and log similar activity in the future.
