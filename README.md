@@ -18,14 +18,12 @@ SRG, short for the Snort Rule Suggester, is a command-line tool that can be used
 * Detects and alerts to port scanning activity on a single host 
 * Detects and alerts to network scanning activity on multiple hosts
 * Generates and prints a Snort rule for each instance described above
-* Outputs a .rules file of the recommended rules for easy implementation and use with Snort
+* Outputs a .rules file of the recommended rules for easy implementation and use with Snort (see notes section for additional detail)
 * Error-checking
 
 # Tech
 
-SRG was built in Python 3 using sys, subprocess, and counter modules, as well as [PrettyTable](https://pypi.org/project/prettytable/).
-
-SRG reads the provided packet capture (pcap) using TShark, the command line tool for [Wireshark](https://www.wireshark.org/download.html).
+SRG was built in Python 3 using sys, subprocess, and counter modules, as well as [PrettyTable](https://pypi.org/project/prettytable/), as seen in the snortsuggeter.py. The script reads the provided packet capture (pcap) using TShark, the command line tool for [Wireshark](https://www.wireshark.org/download.html).
 
 # Installation & Usage
 
@@ -42,6 +40,10 @@ sample output
 screenshot placholder
 ````
 
+# Notes
+
+Placeholder for note on SID numbering
+
 # Contributors
 
 @morrisseyt
@@ -50,9 +52,13 @@ screenshot placholder
 
 # References & Further Reading
 
+* [Wireshark](https://www.wireshark.org/download.html)
 * [TShark](https://www.wireshark.org/docs/man-pages/tshark.html)
 * [Snort - man pages](https://www.snort.org/documents)
 * Brute Force attacks
+* Another link
+* More to read
+* Check this out too
 
 # License
 
