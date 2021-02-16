@@ -1,6 +1,6 @@
 # SRGenerator
 
-SRGenerator, short for the Snort Rule Suggester, is a command-line tool that can be used to detect potentially malicious network traffic. 
+SRGenerator, or Snort-rule generator, is a command-line tool that can be used to detect potentially malicious network traffic. 
 
 # About
 
